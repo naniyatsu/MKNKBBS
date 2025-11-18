@@ -1,0 +1,361 @@
+/* --- 元の「青・白・グレー」の配色 --- */
+body {
+    font-family: sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4; 
+}
+.container {
+    max-width: 1200px; 
+    margin: auto;
+    background-color: #fff; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+}
+h1 {
+    color: #333; 
+    border-bottom: 2px solid #007bff; 
+    padding-bottom: 10px;
+}
+
+/* --- スレッド一覧 --- */
+.thread-list {
+    list-style: none;
+    padding: 0;
+}
+.thread-list li {
+    background-color: #eee; 
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+.thread-list li a {
+    text-decoration: none;
+    color: #0056b3; 
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* --- フォームとボタン --- */
+.new-thread-btn {
+    display: inline-block;
+    background-color: #007bff; 
+    color: #fff; 
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+form {
+    margin-top: 20px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333; 
+}
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box; 
+    border: 1px solid #ccc; 
+    border-radius: 4px;
+}
+.submit-btn { 
+    background-color: #28a745; 
+    color: #fff; 
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+.back-link { 
+    display: inline-block;
+    margin-top: 20px;
+    color: #007bff; 
+    text-decoration: none;
+}
+
+/* --- ナビゲーションバー --- */
+.navbar {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 10px 20px;
+}
+.nav-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+}
+.nav-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+.nav-user {
+    color: #555;
+    margin-right: 15px;
+}
+.nav-link {
+    color: #007bff;
+    text-decoration: none;
+    margin-left: 15px;
+}
+.nav-link-btn { 
+    background-color: #007bff;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+/* --- メインコンテンツのマージン調整 --- */
+.main-content {
+    margin-top: 20px;
+}
+
+/* --- フラッシュメッセージ --- */
+.flash-messages {
+    max-width: 1200px;
+    margin: 15px auto 0 auto;
+    padding: 0;
+}
+.flash-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.flash-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* --- スレッド・投稿の作者名 --- */
+.post-author {
+    font-weight: bold;
+    color: #333;
+}
+
+/* --- ダッシュボード 2列レイアウト --- */
+.dashboard-container {
+    display: flex; 
+    gap: 20px; 
+    max-width: 1200px;
+    margin: 20px auto; 
+    
+    /* ▼▼▼【重要】高さを揃えず、「上端」で揃える ▼▼▼ */
+    align-items: flex-start; 
+}
+.dashboard-column {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 20px;
+    
+    /* (共通の高さは削除) */
+    
+    overflow-y: auto; 
+}
+
+/* --- BBSヘッダー (H2とボタン) --- */
+.bbs-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+.bbs-header h2 {
+    margin: 0; 
+    border: none;
+    padding: 0;
+}
+.bbs-header .new-thread-btn {
+    margin-top: 0;
+}
+
+/* --- スレッド一覧の「左側グループ（New+タイトル）」 --- */
+.thread-title-wrapper {
+    display: flex;
+    align-items: center; 
+    
+    /* ▼▼▼【レイアウト崩れ修正】▼▼▼ */
+    flex: 1; 
+    min-width: 0;
+    word-wrap: break-word; 
+}
+
+/* --- New バッジ（点滅）--- */
+.new-badge {
+    background-color: transparent; 
+    color: #dc3545; 
+    font-size: 0.75rem; 
+    font-weight: bold;
+    margin-right: 15px; 
+    animation: blink-animation 1.5s infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* --- 点滅アニメーションの定義 --- */
+@keyframes blink-animation {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* --- スレッド一覧の「右側グループ」 --- */
+.thread-meta {
+    display: flex;
+    align-items: center; 
+    flex-shrink: 0; 
+    white-space: nowrap; 
+    min-width: 150px; 
+    justify-content: flex-end; 
+}
+.thread-date {
+    font-size: 0.9em;
+    color: #555;
+    margin-left: 0; 
+}
+.thread-meta form {
+    margin: 0 0 0 10px; 
+    display: flex;
+    align-items: center;
+}
+
+/* --- スレッド詳細の投稿デザイン --- */
+.post-list {
+    margin-top: 30px;
+    padding-left: 0;
+    list-style: none;
+}
+.post-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.post-meta {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 10px;
+}
+.post-content {
+    white-space: pre-line; 
+    color: #222;
+    padding-left: 15px; 
+    padding-right: 15px; 
+    margin-bottom: 15px;
+}
+.reply-form {
+    margin-top: 30px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+}
+.reply-form h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    box-sizing: border-box; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: sans-serif;
+}
+
+/* --- 削除ボタン (共通) --- */
+.delete-btn {
+    background-color: #6c757d; 
+    color: #fff;
+    border: none;
+    padding: 3px 8px; 
+    font-size: 0.8em;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.delete-btn:hover {
+    background-color: #5a6268; 
+}
+
+/* --- ダッシュボードの「列の割合」を調整 --- */
+#todo-content {
+    flex: 1;
+    /* ▼▼▼【重要】高さは「自動（auto）」 ▼▼▼ */
+    height: auto; 
+}
+#bbs-content {
+    flex: 2;
+    /* ▼▼▼【重要】BBS列だけ「高さ 80vh」を固定 ▼▼▼ */
+    height: 80vh; 
+}
+
+/* --- ToDo列（棚番号）のヘッダー調整 --- */
+.todo-header {
+    justify-content: flex-start;
+    align-items: center; 
+    /* ▼▼▼【重要】青い下線を削除 ▼▼▼ */
+    border-bottom: none; 
+    padding-bottom: 0; 
+}
+
+/* --- 棚番号リストのインデント --- */
+.shelf-list {
+    list-style: none; 
+    padding-left: 20px; 
+    margin-top: 20px;
+}
+.shelf-list li {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    
+    /* ▼▼▼ この1行を丸ごと「削除」 ▼▼▼ */
+    /* justify-content: space-between; */
+    
+    align-items: center; 
+}
+
+/* --- 棚番号の「左側グループ (New+番号)」 --- */
+.shelf-name-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* --- 棚番号の「更新日時」 --- */
+.shelf-date {
+    font-size: 0.6em; 
+    font-weight: normal; 
+    color: #555;
+    white-space: nowrap; 
+    
+    /* ▼▼▼ これを1行追記 ▼▼▼ */
+    margin-left: 15px; /* 「番号」との隙間 (Newと揃える) */
+}
