@@ -2,23 +2,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 import datetime
-from datetime import timedelta, timezone # JST対応
+from datetime import timedelta # timezone は削除
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import secrets
-import bleach # リンク化
-import os # デプロイ対応
-from dotenv import load_dotenv # デプロイ対応
+import bleach
+import os
+from dotenv import load_dotenv
 
-# --- .env ファイル（秘密のメモ）を読み込む ---
 load_dotenv()
-
-# --- JST（日本時間）の定義 ---
-JST = timezone(timedelta(hours=9))
 
 app = Flask(__name__)
 
-# --- データベース接続（デプロイ対応） ---
+# --- データベース接続 ---
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
@@ -33,7 +29,9 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'このページにアクセスするにはログインが必要です。'
 
-# --- 2. モデル (JST対応済み) ---
+# --- 2. モデル ---
+# ▼▼▼【修正】JST指定を削除し、標準の datetime.datetime.now に戻す ▼▼▼
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -46,27 +44,27 @@ class Thread(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=lambda: datetime.datetime.now(JST))
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now) # JST削除
     posts = db.relationship('Post', backref='thread', lazy=True, cascade="all, delete-orphan")
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=lambda: datetime.datetime.now(JST))
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now) # JST削除
     thread_id = db.Column(db.Integer, db.ForeignKey('thread.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class ShelfConfig(db.Model):
     key = db.Column(db.String(2), primary_key=True) 
     value = db.Column(db.String(2), default='00', nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(JST))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now) # JST削除
     updated_at = db.Column(db.DateTime)
 
 class Invitation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(32), unique=True, nullable=False) 
 
-# --- Jinja2 フィルター (Bleach) ---
+# --- Jinja2 フィルター ---
 def urlize_filter(text):
     return bleach.linkify(text)
 
@@ -80,16 +78,15 @@ def load_user(user_id):
 def dashboard():
     return render_template('dashboard.html')
 
-# 4. HTMX部品 (BBS)
 @app.route('/bbs-content')
 @login_required
 def get_bbs_content():
     all_threads = Thread.query.options(db.joinedload(Thread.author)).order_by(Thread.timestamp.desc()).all()
     
-    # ▼▼▼【JSTエラー修正】「JST」の「今」を取得 ▼▼▼
-    now = datetime.datetime.now(JST) 
-    
+    # ▼▼▼【修正】ここも JST を削除 ▼▼▼
+    now = datetime.datetime.now() 
     three_days_ago = now - timedelta(days=3)
+    
     html = render_template('_bbs_content.html', threads=all_threads, three_days_ago=three_days_ago)
     response = make_response(html)
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -97,16 +94,15 @@ def get_bbs_content():
     response.headers['Expires'] = '0'
     return response
 
-# 5. HTMX部品 (棚番号)
 @app.route('/todo-content')
 @login_required
 def get_shelf_display():
     shelf_data = ShelfConfig.query.all()
     
-    # ▼▼▼【JSTエラー修正】「JST」の「今」を取得 ▼▼▼
-    now = datetime.datetime.now(JST) 
-    
+    # ▼▼▼【修正】ここも JST を削除 ▼▼▼
+    now = datetime.datetime.now()
     three_days_ago = now - timedelta(days=3)
+    
     html = render_template('_todo_content.html', shelf_data=shelf_data, three_days_ago=three_days_ago)
     response = make_response(html)
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -114,7 +110,6 @@ def get_shelf_display():
     response.headers['Expires'] = '0'
     return response
 
-# 6. スレッド作成
 @app.route('/new')
 @login_required
 def new_thread():
@@ -129,7 +124,6 @@ def create_thread():
     db.session.commit()
     return redirect(url_for('dashboard')) 
 
-# 7. スレッド詳細
 @app.route('/thread/<int:thread_id>', methods=['GET', 'POST'])
 def thread_detail(thread_id):
     thread_from_db = Thread.query.options(
@@ -148,7 +142,6 @@ def thread_detail(thread_id):
         return redirect(url_for('thread_detail', thread_id=thread_from_db.id))
     return render_template('thread_detail.html', thread=thread_from_db)
 
-# 8. 投稿の削除 (アドミン専用)
 @app.route('/post/delete/<int:post_id>', methods=['POST'])
 @login_required
 def delete_post(post_id):
@@ -164,7 +157,6 @@ def delete_post(post_id):
     flash('投稿を削除しました。', 'success')
     return redirect(url_for('thread_detail', thread_id=post_to_delete.thread_id))
 
-# 9. スレッドの削除 (アドミン専用)
 @app.route('/thread/delete/<int:thread_id>', methods=['POST'])
 @login_required
 def delete_thread(thread_id):
@@ -180,7 +172,6 @@ def delete_thread(thread_id):
     flash('スレッドを削除しました。', 'success')
     return redirect(url_for('dashboard'))
 
-# 10. ログイン/ログアウト/招待/登録
 @app.route('/admin/invite', methods=['GET', 'POST'])
 @login_required
 def admin_invite():
@@ -239,7 +230,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# 11. 設定関連
 @app.route('/settings')
 @login_required
 def settings_page():
@@ -259,7 +249,8 @@ def settings_shelf():
                 config = ShelfConfig.query.filter_by(key=prefix).first()
                 if config:
                     config.value = formatted_suffix
-                    config.updated_at = datetime.datetime.now(JST) # JSTで手動更新
+                    # ▼▼▼【修正】JST削除 ▼▼▼
+                    config.updated_at = datetime.datetime.now() 
                 else:
                     db.session.add(ShelfConfig(key=prefix, value=formatted_suffix))
             db.session.commit()
@@ -291,12 +282,8 @@ def change_password():
         return redirect(url_for('dashboard')) 
     return render_template('change_password.html')
 
-# --- サーバー起動の前に、Jinja2フィルターを登録 ---
 app.jinja_env.filters['urlize'] = urlize_filter
 
-
-# --- サーバー起動 ---
-# ▼▼▼【構文エラー修正】これが「正しい」起動ブロック ▼▼▼
 with app.app_context():
     db.create_all() 
     if not ShelfConfig.query.first():
@@ -314,8 +301,6 @@ with app.app_context():
         db.session.commit()
         print(" * ユーザー名: admin")
         print(" * パスワード: password")
-        print(" * ★★★ 起動後、必ずパスワードを変更してください ★★★")
 
-# 開発環境（ローカル）で python app.py と実行した時だけ、これを動かす
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)　
