@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+</html>
+    <meta charset="UTF-8">
+    <title>{% block title %}BBS+{% endblock %}</title>
+    
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head_style %}{% endblock %}
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="nav-brand" href="/">BBS+</a>
+            <div class="nav-links">
+                {% if current_user.is_authenticated %}
+                    <span class="nav-user">こんにちは、 {{ current_user.username }} さん</span>
+                    
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_invite') }}" class="nav-link" style="color: red; font-weight: bold;">招致キー</a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('change_password') }}" class="nav-link">パスワード変更</a>
+                    
+                    <a href="/logout" class="nav-link">ログアウト</a>
+                    
+                    {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

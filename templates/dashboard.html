@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}ダッシュボード{% endblock %}
+
+{% block content %}
+
+    <div class="dashboard-container">
+        <div id="todo-content" 
+             class="dashboard-column" 
+             hx-get="/todo-content" 
+             hx-trigger="load">
+            <p>棚番号を読み込んでいます...</p>
+        </div>
+        <div id="bbs-content" 
+             class="dashboard-column" 
+             hx-get="/bbs-content" 
+             hx-trigger="load">
+            <p>BBSを読み込んでいます...</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        </div>
+
+{% endblock %}

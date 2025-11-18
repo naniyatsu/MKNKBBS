@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}新しいスレッド{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>新しいスレッドを立てる</h1>
+
+    <form action="/create" method="POST">
+        <label for="title">スレッドタイトル:</label>
+        <input type="text" id="title" name="title" required>
+        
+        <button type="submit" class="submit-btn">作成する</button>
+    </form>
+
+    <a href="/" class="back-link">← スレッド一覧に戻る</a>
+</div>
+{% endblock %}

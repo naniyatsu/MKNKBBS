@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}設定メニュー{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <h1>設定メニュー</h1>
+    <hr>
+    
+    <h2><a href="{{ url_for('settings_shelf') }}">棚番号の設定</a></h2>
+    <p>現在の棚番号の下2桁 (XX) を設定します。</p>
+    
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}アドミン - 招待キー発行{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <h1>招待キーの発行</h1>
+    <p>新しい一般ユーザーを招待するための「使い捨て」のキーを発行します。</p>
+
+    <form method="POST" action="{{ url_for('admin_invite') }}">
+        <button type="submit" class="submit-btn">新しいキーを発行する</button>
+    </form>
+    
+    <a href="/" class="back-link" style="margin-top: 30px;">← ダッシュボードに戻る</a>
+</div>
+{% endblock %}

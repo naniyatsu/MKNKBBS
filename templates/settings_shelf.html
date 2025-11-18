@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}棚番号の設定{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <h1>棚番号の設定</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <p style="margin-top: 20px;">棚番号の下2桁 (00〜99) を入力してください。</p>
+
+    <form method="POST" action="{{ url_for('settings_shelf') }}">
+        
+        {% for item in shelf_data %}
+        <div class="form-group" style="display: flex; align-items: center; margin-bottom: 15px;">
+            <label for="{{ item.key }}" style="width: 50px; font-size: 1.5em; font-weight: bold;">{{ item.key }}:</label>
+            
+            <input type="text" 
+                   id="{{ item.key }}" 
+                   name="{{ item.key }}" 
+                   value="{{ item.value }}" 
+                   maxlength="2" 
+                   style="width: 60px; font-size: 1.5em; text-align: center;">
+            
+        </div>
+        {% endfor %}
+        
+        <button type="submit" class="submit-btn" style="margin-top: 20px;">設定を保存</button>
+    </form>
+    
+    <a href="{{ url_for('dashboard') }}" class="back-link">← ダッシュボードに戻る</a>
+
+</div>
+{% endblock %}
