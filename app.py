@@ -124,46 +124,36 @@ def create_thread():
     db.session.commit()
     return redirect(url_for('dashboard')) 
 
-# app.py の 147行目あたり（thread_detail関数全体）
 
+# 7. スレッド詳細（投稿と表示）
 @app.route('/thread/<int:thread_id>', methods=['GET', 'POST'])
-@login_required # ログイン必須にする
+@login_required # ログイン必須
 def thread_detail(thread_id):
+    # スレッドを取得
     thread_from_db = Thread.query.options(
         db.joinedload(Thread.posts).joinedload(Post.author)
     ).get_or_404(thread_id)
 
-    # 投稿（POST）処理
+    # ▼▼▼ POST（投稿）の処理 ▼▼▼
     if request.method == 'POST':
         content_from_form = request.form['content']
+        
+        # 新しい投稿を作成
         new_post = Post(content=content_from_form, 
                         thread_id=thread_from_db.id, 
-                        user_id=current_user.id) 
-                        
-        # 【並べ替え修正】スレッドの更新日時を最新の投稿日時に更新
-        thread_from_db.timestamp = datetime.datetime.now() 
-
+                        user_id=current_user.id)
+        
+        # ▼▼▼【改良】スレッド自体の「更新日時」を「今」に更新（これで一番上に上がります） ▼▼▼
+        thread_from_db.timestamp = datetime.datetime.now(JST)
+        
         db.session.add(new_post)
         db.session.commit()
         
-        # 【HTMX対応】投稿が成功したら、更新後のコンテンツのみを返す
-        # HTMXリクエストの場合は、部分的なテンプレートを返す
-        if request.headers.get('HX-Request'):
-            return render_template('_thread_detail_content.html', thread=thread_from_db)
-
-        # 通常のリクエストの場合は、リダイレクト
+        # 投稿後は、スレッド詳細ページに戻る
         return redirect(url_for('thread_detail', thread_id=thread_from_db.id))
 
-    # 表示（GET）処理
-    # 【HTMX対応】HTMXリクエストかどうかをチェック
-    is_htmx = request.headers.get('HX-Request')
-    
-    if is_htmx:
-        # HTMXリクエストの場合は、部分的なテンプレートを返す
-        return render_template('_thread_detail_content.html', thread=thread_from_db)
-    else:
-        # 通常のアクセス（フルページ）の場合は、thread_detail.htmlを返す
-        return render_template('thread_detail.html', thread=thread_from_db)
+    # ▼▼▼ GET（表示）の処理 ▼▼▼
+    return render_template('thread_detail.html', thread=thread_from_db)
 
 @app.route('/post/delete/<int:post_id>', methods=['POST'])
 @login_required
@@ -258,33 +248,50 @@ def logout():
 def settings_page():
     return render_template('settings_page.html')
 
+# 12. 棚番号の設定画面
 @app.route('/settings/shelf', methods=['GET', 'POST'])
 @login_required
 def settings_shelf():
     if request.method == 'POST':
         data = request.form
         try:
+            changes_made = False # 変更があったかどうかのフラグ
+            
             for prefix, suffix in data.items():
                 if not (suffix.isdigit() and 0 <= int(suffix) <= 99):
                     flash(f'「{prefix}」の設定値が無効です。00から99までの数字を入力してください。', 'error')
                     return redirect(url_for('settings_shelf'))
+                
                 formatted_suffix = suffix.zfill(2)
                 config = ShelfConfig.query.filter_by(key=prefix).first()
+                
                 if config:
-                    config.value = formatted_suffix
-                    # ▼▼▼【修正】JST削除 ▼▼▼
-                    config.updated_at = datetime.datetime.now() 
+                    # ▼▼▼【改良】値が変わった時だけ更新する ▼▼▼
+                    if config.value != formatted_suffix:
+                        config.value = formatted_suffix
+                        config.updated_at = datetime.datetime.now(JST) # JSTで更新
+                        changes_made = True
                 else:
-                    db.session.add(ShelfConfig(key=prefix, value=formatted_suffix))
+                    # 新規作成時は常に日時を設定
+                    new_config = ShelfConfig(key=prefix, value=formatted_suffix)
+                    new_config.updated_at = datetime.datetime.now(JST)
+                    db.session.add(new_config)
+                    changes_made = True
+
             db.session.commit()
-            flash('棚番号の設定を保存しました。', 'success')
+            
+            if changes_made:
+                flash('棚番号の設定を保存しました。', 'success')
+            else:
+                flash('変更がなかったため、更新しませんでした。', 'info')
+                
         except Exception as e:
             db.session.rollback()
             flash(f'保存中にエラーが発生しました: {e}', 'error')
         return redirect(url_for('settings_shelf'))
+        
     shelf_data = ShelfConfig.query.all()
     return render_template('settings_shelf.html', shelf_data=shelf_data)
-
 @app.route('/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password():
