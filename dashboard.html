@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div id="todo-content" 
+         class="dashboard-column"
+         hx-get="/todo-content"
+         hx-trigger="load">
+        <p>棚番号を読み込んでいます...</p>
+    </div>
+
+    <div id="bbs-content-target" 
+         class="dashboard-column" 
+         hx-get="/bbs-content" 
+         hx-trigger="load">
+        <p>BBSを読み込んでいます...</p>
+    </div>
+
+</div>
+
+<div class="container" style="margin-top: 20px;">
+    <h2>リンク集</h2>
+    <hr style="margin-top: 5px;">
+    <p>
+        <a href="https://google.com" target="_blank">Google</a> | 
+        <a href="https://youtube.com" target="_blank">YouTube</a> |
+        <a href="#" target="_blank">（社内リンクなど）</a>
+    </p>
+</div>
+
+<div id="main-content">
+    </div>
+
+{% endblock %}
