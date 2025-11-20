@@ -1,48 +1,15 @@
-<div class="container" style="max-width: 100%; box-shadow: none; background: none; padding: 0;">
-    
-    <div class="bbs-header todo-header">
-        <h2>現在の棚番号</h2>
-    </div>
-
-    <ul class="shelf-list">
-        {% for item in shelf_data %}
-            <li>
-                <div class="shelf-name-wrapper">
-                    
-                    {% set last_update = item.updated_at or item.created_at %}
-                    {% if last_update > three_days_ago %}
-                        <span class="new-badge">New</span>
-                    {% endif %}
-                    
-                    <span>{{ item.key }}{{ item.value }}</span>
-
-                    <span class="shelf-date">
-                        {% if item.updated_at %}
-                            {{ item.updated_at.strftime('%Y年 %m月 %d日 %I:%M %p') }}
-                        {% else %}
-                            {{ item.created_at.strftime('%Y年 %m月 %d日 %I:%M %p') }}
-                        {% endif %}
-                    </span>
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
-
-    
+<div class="bbs-header todo-header">
+    <h2>現在の棚番号</h2>
 </div>
 
-<div class="container" style="max-width: 100%; box-shadow: none; background: none; padding: 0;">
-    
-    
+<ul class="shelf-list">
+    {% for item in shelf_data %}
+        <li class="shelf-item">
+            <span class="shelf-key">{{ item.key }}</span>
+            <span class="shelf-value">{{ item.value }}</span>
+        </li>
+    {% endfor %}
+</ul>
 
-    <div style="margin-top: 30px;">
-        <h2>棚番号について</h2>
-        <p style="margin-top: 15px;"><a href="{{ url_for('settings_shelf') }}">棚番号の設定</a></p>
-        <hr style="margin-top: 5px;">
-        <p>
-           
-           
-            <a href="https://daisy-weather-d6f.notion.site/1fc535b9858e8088bedff39f47e8ab12" target="みけねこ堂マニュアル">みけねこ堂マニュアル</a>
-        </p>
-    </div>
-    </div>
+<hr>
+<p style="margin-top: 15px;"><a href="{{ url_for('settings_shelf') }}">棚番号の設定</a></p>

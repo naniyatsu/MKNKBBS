@@ -43,11 +43,9 @@
     {% if current_user.is_authenticated %}
     <form class="reply-form" 
           method="POST"
-          
           hx-post="{{ url_for('thread_detail', thread_id=thread.id) }}"
           hx-target="#bbs-content-target"
           hx-swap="innerHTML"
-          
           >
           
         <h3>このスレッドに返信する</h3>
