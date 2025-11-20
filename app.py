@@ -124,23 +124,46 @@ def create_thread():
     db.session.commit()
     return redirect(url_for('dashboard')) 
 
+# app.py の 147行目あたり（thread_detail関数全体）
+
 @app.route('/thread/<int:thread_id>', methods=['GET', 'POST'])
+@login_required # ログイン必須にする
 def thread_detail(thread_id):
     thread_from_db = Thread.query.options(
         db.joinedload(Thread.posts).joinedload(Post.author)
     ).get_or_404(thread_id)
+
+    # 投稿（POST）処理
     if request.method == 'POST':
-        if not current_user.is_authenticated:
-            flash('投稿するにはログインが必要です。', 'error')
-            return redirect(url_for('login'))
         content_from_form = request.form['content']
         new_post = Post(content=content_from_form, 
                         thread_id=thread_from_db.id, 
                         user_id=current_user.id) 
+                        
+        # 【並べ替え修正】スレッドの更新日時を最新の投稿日時に更新
+        thread_from_db.timestamp = datetime.datetime.now() 
+
         db.session.add(new_post)
         db.session.commit()
+        
+        # 【HTMX対応】投稿が成功したら、更新後のコンテンツのみを返す
+        # HTMXリクエストの場合は、部分的なテンプレートを返す
+        if request.headers.get('HX-Request'):
+            return render_template('_thread_detail_content.html', thread=thread_from_db)
+
+        # 通常のリクエストの場合は、リダイレクト
         return redirect(url_for('thread_detail', thread_id=thread_from_db.id))
-    return render_template('thread_detail.html', thread=thread_from_db)
+
+    # 表示（GET）処理
+    # 【HTMX対応】HTMXリクエストかどうかをチェック
+    is_htmx = request.headers.get('HX-Request')
+    
+    if is_htmx:
+        # HTMXリクエストの場合は、部分的なテンプレートを返す
+        return render_template('_thread_detail_content.html', thread=thread_from_db)
+    else:
+        # 通常のアクセス（フルページ）の場合は、thread_detail.htmlを返す
+        return render_template('thread_detail.html', thread=thread_from_db)
 
 @app.route('/post/delete/<int:post_id>', methods=['POST'])
 @login_required
@@ -304,4 +327,3 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
