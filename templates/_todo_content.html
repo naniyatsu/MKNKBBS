@@ -4,9 +4,21 @@
 
 <ul class="shelf-list">
     {% for item in shelf_data %}
-        <li class="shelf-item">
-            <span class="shelf-key">{{ item.key }}</span>
-            <span class="shelf-value">{{ item.value }}</span>
+        <li>
+            <div class="shelf-name-wrapper">
+                {% set last_update = item.updated_at or item.created_at %}
+                {% if last_update > three_days_ago %}
+                    <span class="new-badge">New</span>
+                {% endif %}
+                <span>{{ item.key }}{{ item.value }}</span>
+            </div>
+            <span class="shelf-date">
+                {% if item.updated_at %}
+                    {{ item.updated_at.strftime('%Y年 %m月 %d日 %I:%M %p') }}
+                {% else %}
+                    {{ item.created_at.strftime('%Y年 %m月 %d日 %I:%M %p') }}
+                {% endif %}
+            </span>
         </li>
     {% endfor %}
 </ul>
