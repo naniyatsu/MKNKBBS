@@ -305,17 +305,19 @@ textarea {
 }
 
 /* --- ダッシュボードの「列の割合」を調整 --- */
+
+/* 左側（棚番号）の割合 */
 #todo-content {
-    flex: 1;
-    /* ▼▼▼【重要】高さは「自動（auto）」 ▼▼▼ */
-    height: auto; 
-}
-#bbs-content {
-    flex: 2;
-    /* ▼▼▼【重要】BBS列だけ「高さ 80vh」を固定 ▼▼▼ */
-    height: 80vh; 
+    /* flex: 1;  ←これをやめて、固定幅にする */
+    flex: 0 0 350px; /* 幅を「350px」に固定 (伸び縮みさせない) */
+    height: auto;    /* 高さは中身に合わせる */
 }
 
+/* 右側（BBS）の割合 */
+#bbs-content {
+    flex: 1;      /* 残りのスペースを「全部」使う */
+    height: 80vh; /* 高さは固定 */
+}
 /* --- ToDo列（棚番号）のヘッダー調整 --- */
 .todo-header {
     justify-content: flex-start;
