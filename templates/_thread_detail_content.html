@@ -1,0 +1,62 @@
+<div class="thread-detail-wrapper">
+    <h1>{{ thread.title }}</h1>
+    
+    <a href="#" 
+       hx-get="{{ url_for('get_bbs_content') }}" 
+       hx-target="#bbs-content-target" 
+       hx-swap="innerHTML"
+       class="back-link">← スレッド一覧に戻る</a>
+
+    {% if current_user.is_admin %}
+        <form method="POST" 
+              action="{{ url_for('delete_thread', thread_id=thread.id) }}" 
+              style="display: inline; margin-left: 20px;"
+              onsubmit="return confirm('本当にこのスレッドを削除しますか？\n（すべての子投稿も削除されます）');">
+            <button type="submit" class="delete-btn">スレッド削除</button>
+        </form>
+    {% endif %}
+
+    <ul class="post-list">
+        {% for post in thread.posts %}
+        <li class="post-item">
+            <div class="post-meta">
+                <span class="post-author">{{ post.author.username }}</span>
+                <span style="margin-left: 10px;">{{ post.timestamp.strftime('%Y-%m-%d') }}</span> 
+                <span style="margin-left: 10px;">{{ post.timestamp.strftime('%H:%M') }}</span> 
+                
+                {% if current_user.is_admin or current_user == post.author %}
+                    <form method="POST" 
+                          action="{{ url_for('delete_post', post_id=post.id) }}" 
+                          style="display: inline; margin-left: 10px;"
+                          onsubmit="return confirm('本当にこの投稿を削除しますか？');">
+                        <button type="submit" class="delete-btn">削除</button>
+                    </form>
+                {% endif %}
+            </div>
+            <div class="post-content">
+                {{ post.content | urlize }}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    {% if current_user.is_authenticated %}
+    <form class="reply-form" 
+          method="POST"
+          
+          hx-post="{{ url_for('thread_detail', thread_id=thread.id) }}"
+          hx-target="#bbs-content-target"
+          hx-swap="innerHTML"
+          
+          >
+          
+        <h3>このスレッドに返信する</h3>
+        <label for="content">メッセージ:</label>
+        <textarea id="content" name="content" required></textarea>
+        <button type="submit" class="submit-btn" onclick="this.form.reset()">投稿する</button>
+    </form>
+    {% else %}
+    <p class="post-meta">投稿するには、<a href="{{ url_for('login') }}">ログイン</a>してください。</p>
+    {% endif %}
+
+</div>

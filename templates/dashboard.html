@@ -3,23 +3,27 @@
 {% block title %}ダッシュボード{% endblock %}
 
 {% block content %}
-
-    <div class="dashboard-container">
-        <div id="todo-content" 
-             class="dashboard-column" 
-             hx-get="/todo-content" 
-             hx-trigger="load">
-            <p>棚番号を読み込んでいます...</p>
-        </div>
-        <div id="bbs-content" 
-             class="dashboard-column" 
-             hx-get="/bbs-content" 
-             hx-trigger="load">
-            <p>BBSを読み込んでいます...</p>
+<div class="dashboard-grid">
+    <div class="bbs-area">
+        <h1>チーム掲示板</h1>
+        
+        <div id="bbs-content-target" 
+             hx-get="{{ url_for('get_bbs_content') }}" 
+             hx-trigger="load, every 30s"
+             hx-swap="innerHTML">
+            BBSコンテンツをロード中...
         </div>
     </div>
-
-    <div id="main-content">
+    
+    <div class="todo-area">
+        <h1>TODO棚</h1>
+        
+        <div id="todo-content-target"
+             hx-get="{{ url_for('get_shelf_display') }}"
+             hx-trigger="load"
+             hx-swap="innerHTML">
+            TODOコンテンツをロード中...
         </div>
-
+    </div>
+</div>
 {% endblock %}

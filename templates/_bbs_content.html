@@ -2,16 +2,15 @@
     
     <div class="bbs-header">
         <h2>BBS</h2>
-        <a href="/new" class="new-thread-btn">記事作成</a>
+        <a href="/new" class="new-thread-btn">スレッド作成</a>
     </div>
 
     <ul class="thread-list">
         {% for thread in threads %}
         
         <li> 
-        
             <div class="thread-title-wrapper">
-            
+                
                 {% if thread.timestamp > three_days_ago %}
                     <span class="new-badge">New</span>
                 {% endif %}
@@ -26,8 +25,9 @@
                 <span class="thread-date">{{ thread.timestamp.strftime('%Y-%m-%d') }}</span>
 
                 {% if current_user.is_admin %}
-                <form method="POST" 
+                    <form method="POST" 
                           action="{{ url_for('delete_thread', thread_id=thread.id) }}" 
+                          style="display: inline;"
                           onsubmit="return confirm('【警告】スレッドごと削除します。\nこのスレッド内の「すべての投稿」も削除されますが、\n本当によろしいですか？');">
                         
                         <button type="submit" class="delete-btn">削除</button>
