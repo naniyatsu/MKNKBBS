@@ -15,13 +15,16 @@
                     <span class="new-badge">New</span>
                 {% endif %}
                 
-                <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
-                
-            </div>
-            
+                <a href="#" 
+                   hx-get="{{ url_for('thread_detail', thread_id=thread.id) }}" 
+                   hx-target="#bbs-content-target" 
+                   hx-swap="innerHTML"
+                   class="thread-title-link">
+                    {{ thread.title }}
+                </a>
+                </div>
             
             <div class="thread-meta">
-            
                 <span class="thread-date">{{ thread.timestamp.strftime('%Y-%m-%d') }}</span>
 
                 {% if current_user.is_admin %}
@@ -35,7 +38,8 @@
                 {% endif %}
                 
             </div>
-            </li>
+            
+        </li>
         {% endfor %}
     </ul>
 </div>
